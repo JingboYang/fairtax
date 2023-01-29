@@ -48,7 +48,33 @@ def tax_us_federal(income, brackets, medicare_rate):
     tax = income_tax + medicare_tax
    
     return tax, tax / income
- 
+
+def consumption_tax(income, housing_rate, food_rate, disc_rate, luxury_rate):
+    housing = min(max(600 * 12, income * 0.3), 7_500 * 12)
+    tax = 0
+    food = min(max(20 * 360, income * 0.15), 100 * 360)
+    food = min(food, income - tax - housing)
+    saving1 = income * 0.05
+    saving1 = min(saving1, income - tax - housing - food)
+    disc = min(max(25 * 360, income * 0.3), 3000 * 12)
+    disc = min(disc, income - tax - housing - food - saving1)
+    saving2 = min(income * 0.15, 25_000)
+    saving2 = min(saving2, income - tax - housing - food - saving1 - disc)
+    luxury = max(income * 0.05, 7500 * 12)
+    luxury = min(luxury, income - tax - housing - food - saving1 - disc - saving2)
+    saving3 = income - tax - housing - food - disc - saving1 - luxury - saving2
+
+    tax = food * food_rate + housing * housing_rate + disc * disc_rate + luxury * luxury_rate
+    return tax, tax / income, dict(income=income, tax=tax, housing=housing, food=food, disc=disc, saving=saving1+saving2+saving3, luxury=luxury)
+
+def consumption_tax_ubi(income, ubi, housing_rate, food_rate, disc_rate, luxury_rate):
+    tax, _, details = consumption_tax(income + ubi, housing_rate, food_rate, disc_rate, luxury_rate)
+    tax = tax - ubi
+    return tax, tax / income, details
+
+if __name__ == '__main__':
+    pass
+
 # %%
 l_income = np.arange(10000, 1e6, 100)
 dol_rate = 0
@@ -139,28 +165,6 @@ df['housing'].to_numpy()[:5]
 # %%
 
 
-def consumption_tax(income, housing_rate, food_rate, disc_rate, luxury_rate):
-    housing = min(max(600 * 12, income * 0.3), 7_500 * 12)
-    tax = 0
-    food = min(max(20 * 360, income * 0.15), 100 * 360)
-    food = min(food, income - tax - housing)
-    saving1 = income * 0.05
-    saving1 = min(saving1, income - tax - housing - food)
-    disc = min(max(25 * 360, income * 0.3), 3000 * 12)
-    disc = min(disc, income - tax - housing - food - saving1)
-    saving2 = min(income * 0.15, 25_000)
-    saving2 = min(saving2, income - tax - housing - food - saving1 - disc)
-    luxury = max(income * 0.05, 7500 * 12)
-    luxury = min(luxury, income - tax - housing - food - saving1 - disc - saving2)
-    saving3 = income - tax - housing - food - disc - saving1 - luxury - saving2
-
-    tax = food * food_rate + housing * housing_rate + disc * disc_rate + luxury * luxury_rate
-    return tax, tax / income, dict(income=income, tax=tax, housing=housing, food=food, disc=disc, saving=saving1+saving2+saving3, luxury=luxury)
-
-def consumption_tax_ubi(income, ubi, housing_rate, food_rate, disc_rate, luxury_rate):
-    tax, _, details = consumption_tax(income + ubi, housing_rate, food_rate, disc_rate, luxury_rate)
-    tax = tax - ubi
-    return tax, tax / income, details
 # %%
 consumption_tax_ubi(2e5, 5000, 0.025, 0.15, 0.35, 0.5)
 # %%

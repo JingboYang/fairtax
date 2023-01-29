@@ -1,4 +1,4 @@
-ndividual Income Percentile    2022    2021    Absolute Increase   Percentage Change
+Income_Percentile    2022    2021    Absolute_Increase   Percentage_Change
 1%  $0  $0  $0  0%
 2%  $0  $0  $0  0%
 3%  $3  $52 -$49    -94.23%
@@ -98,3 +98,5 @@ ndividual Income Percentile    2022    2021    Absolute Increase   Percentage Ch
 97% $232,000    $220,005    $11,995 5.45%
 98% $280,100    $259,608    $20,492 7.89%
 99% $401,622    $357,552    $44,070 12.33%
+99.9% $2,000,000    ? ? ?
+100% $6,000,000    ? ? ?
